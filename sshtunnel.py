@@ -1143,6 +1143,7 @@ class SSHTunnelForwarder(object):
             - ``str`` - in this case it represents a private key file; public
             key will be obtained from it
             - ``paramiko.Pkey`` - it will be transparently added to loaded keys
+            - ``paramiko.pkey.PublicBlob`` - retrieve from ssh agent the matching private key 
 
         """
         ssh_loaded_pkeys = SSHTunnelForwarder.get_keys(
@@ -1150,6 +1151,15 @@ class SSHTunnelForwarder(object):
             host_pkey_directories=host_pkey_directories,
             allow_agent=allow_agent
         )
+
+        if isinstance(ssh_pkey, paramiko.pkey.PublicBlob):
+            ssh_loaded_pkey = []
+            for k in ssh_loaded_pkeys:
+                if k.asbytes() == ssh_pkey.key_blob:
+                    print('found within agent')
+                    ssh_loaded_pkey.insert(0, k)
+                    break
+            return (ssh_password, ssh_loaded_pkey)
 
         if isinstance(ssh_pkey, string_types):
             ssh_pkey_expanded = os.path.expanduser(ssh_pkey)

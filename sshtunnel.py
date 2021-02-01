@@ -1156,7 +1156,6 @@ class SSHTunnelForwarder(object):
             ssh_loaded_pkey = []
             for k in ssh_loaded_pkeys:
                 if k.asbytes() == ssh_pkey.key_blob:
-                    print('found within agent')
                     ssh_loaded_pkey.insert(0, k)
                     break
             return (ssh_password, ssh_loaded_pkey)
